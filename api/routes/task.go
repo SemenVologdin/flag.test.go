@@ -25,11 +25,13 @@ func (r *TaskRoute) SetUp() {
 	api := r.handler.Gin.Group("/api").Use(func(context *gin.Context) {
 		log.Println("Запрос получен!")
 	})
-	api.GET("/tasks", r.controller.GetTasks)
-	api.GET("/task/:id", r.controller.GetTask)
-	api.PUT("/task/", r.controller.CreateTask)
-	api.DELETE("/task/:id", r.controller.DeleteTask)
-	api.PATCH("/task/:id", r.controller.UpdateTask)
+	{
+		api.GET("/tasks", r.controller.GetTasks)
+		api.GET("/task/:id", r.controller.GetTask)
+		api.PUT("/task/", r.controller.CreateTask)
+		api.DELETE("/task/:id", r.controller.DeleteTask)
+		api.PATCH("/task/:id", r.controller.UpdateTask)
+	}
 }
 
 func (r *TaskRoute) Run(env lib.Env) error {

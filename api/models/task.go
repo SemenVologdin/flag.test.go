@@ -6,8 +6,8 @@ type Task struct {
 	Id          int         `json:"id"`
 	Title       string      `json:"title"`
 	Description string      `json:"description"`
-	CreatedDate pgtype.Date `json:"date_create"`
-	UpdatedDate pgtype.Date `json:"date_update"`
+	CreatedDate pgtype.Date `json:"created_at"`
+	UpdatedDate pgtype.Date `json:"updated_at"`
 
 	Answers []Answer `json:"answers"`
 }

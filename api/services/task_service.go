@@ -22,5 +22,77 @@ func (serv TaskService) GetTask(id int) (models.Task, error) {
 }
 
 func (serv TaskService) DeleteTask(id int) error {
-	return serv.repository.DeleteTask(id)
+	tx, err := serv.repository.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	err = serv.repository.DeleteAnswersByTaskId(id)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	err = serv.repository.DeleteTask(id)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (serv TaskService) CreateTask(task models.Task) (int, error) {
+	tx, err := serv.repository.DB.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	taskId, err := serv.repository.CreateTask(task)
+	if err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	err = serv.repository.CreateAnswers(taskId, task.Answers)
+	if err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return 0, err
+	}
+
+	return taskId, nil
+}
+
+func (serv TaskService) UpdateTask(task models.Task) (int, error) {
+	tx, err := serv.repository.DB.Begin()
+	if err != nil {
+		return 0, err
+	}
+
+	taskId, err := serv.repository.UpdateTask(task)
+	if err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	err = serv.repository.UpdateAnswers(taskId, task.Answers)
+	if err != nil {
+		_ = tx.Rollback()
+		return 0, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return 0, err
+	}
+
+	return taskId, nil
 }

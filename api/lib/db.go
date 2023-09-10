@@ -7,7 +7,7 @@ import (
 )
 
 type DataBase struct {
-	*pgx.Conn
+	*pgx.ConnPool
 }
 
 func NewDatabase(env Env) DataBase {
@@ -19,7 +19,7 @@ func NewDatabase(env Env) DataBase {
 		Password: env.DBPassword,
 		Database: env.DBName,
 	}
-	conn, err := pgx.Connect(config)
+	conn, err := pgx.NewConnPool(pgx.ConnPoolConfig{ConnConfig: config})
 	if err != nil {
 		log.Fatalf("Не удалось подключиться к БД!\n%+v", err)
 	}
