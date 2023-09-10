@@ -13,6 +13,8 @@ func main() {
 	log.Println("Старт приложения!")
 	env := lib.NewEnv()
 	database := lib.NewDatabase(env)
+	defer database.Close()
+
 	repo := repository.NewTaskRepository(database)
 	service := services.NewTaskService(repo)
 	controller := controllers.NewTaskController(service)
@@ -22,7 +24,7 @@ func main() {
 	route.SetUp()
 	err := route.Run(env)
 	if err != nil {
-		log.Fatalf("Произошла ошибка при старте приложения!")
+		log.Fatalf("Произошла ошибка при старте приложения!\n%+v", err)
 	}
 
 }
